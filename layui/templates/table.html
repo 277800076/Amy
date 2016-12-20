@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+ <head>
+     <meta charset="UTF-8" />
+     <title>首页</title>
+     <meta name="renderer" content="webkit" />
+     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+     <link rel="stylesheet" href="/static/css/index.css" />
+     <link rel="stylesheet" href="/static/css/font_3mj1em3wq7b0ggb9.css" />
+     <link rel="stylesheet" href="/static/plugins/layui/css/layui.css" />
+     <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.min.css">
+     <link rel="stylesheet" href="/static/css/main.css" />
+ </head>
+ <body>
+  <div class="tab-body">
+      <p class="page-tab">
+          <span class="layui-breadcrumb" lay-separator="&gt;">
+              <a href="">首页</a>
+              <a><cite>{{ view.name }}</cite></a>
+          </span>
+      </p>
+      <div class="admin-main">
+          <div class="handle-box">
+              <ul>
+                  <li class="handle-item">
+                      {% for btn in btns %}
+                          {{ btn |safe }}
+                      {% endfor %}
+                      <span class="fr">
+                          <button class="layui-btn mgl-20" onclick="location.reload()">刷新</button>
+                      </span>
+                  </li>
+              </ul>
+          </div>
+          <table class="table-box table-sort" id="BaseTable">
+              <thead>
+              <tr>
+                  {% for col in table_th %}
+                      <th>{{ col }}</th>
+                  {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+              {{ table_td |safe }}
+              </tbody>
+          </table>
+      </div>
+  </div>
+  <script src="/static/plugins/layui/layui.js"></script>
+  <script src="/static/lib/jquery-1.11.1.min.js"></script>
+  <script src="/static/js/define/common.js"></script>
+  <script src="/static/js/custom.js"></script>
+
+  <script>
+      layui.use(["layer", "datatable"],
+        function() {
+            var n = layui.jquery,
+            e = layui.layer;
+            n(function() {
+                n("#BaseTable").dataTable({
+                    language: lang,
+                    autoWidth: !1,
+                    lengthMenu: [10, 20, 50],
+                    stripeClasses: ["odd", "even"],
+                    searching: !0,
+                    paging: !0,
+                    lengthChange: !0,
+                    info: !0,
+                    order: [{{ order }}, "desc"],
+                    deferRender: !0,
+{#                    ajax: "/auth/list",#}
+{#                    columns: [#}
+{#                    {#}
+{#                        data: "id"#}
+{#                    },#}
+{#                    {#}
+{#                        data: function(n) {#}
+{#                            return n.username#}
+{#                        }#}
+{#                    },#}
+{#                    {#}
+{#                        data: "email"#}
+{#                    },#}
+{#                        {#}
+{#                        data: function(n) {#}
+{#                            return n.is_superuser ? '<span class="label label-success radius">管理员</span>': '<span class="label label-default radius">普通用户</span>'#}
+{#                        }#}
+{#                    }, {#}
+{#                        data: function(n) {#}
+{#                            return n.is_active ? '<span class="label label-success radius">已启用</span>': '<span class="label label-default radius">已停用</span>'#}
+{#                        },#}
+{#                        className: "td-status"#}
+{#                    },#}
+{#                    {#}
+{#                        data: 'date_joined'#}
+{#                    },#}
+{##}
+{#                    {#}
+{#                        data: function(n) {#}
+{#                            var manager = n.manager;#}
+{#                            var _html = '';#}
+{#                            if(manager.indexOf('change')){#}
+{#                                _html = _html + '<span title="停用" class="handle-btn handle-btn-stop"><i class="linyer icon-zanting"></i></span>'#}
+{#                            }#}
+{#                            if(manager.indexOf('delete')){#}
+{#                                _html = _html + '<span title="删除" class="handle-btn handle-btn-delect"><i class="linyer icon-delect"></i></span>'#}
+{#                            }#}
+{#                            return _html;#}
+{#                        },#}
+{#                        className: "td-handle"#}
+{#                    }]#}
+                });
+            })
+        });
+  </script>
+ </body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <style>
+        body{padding: 30px;}
+    </style>
+</head>
+<body>
+
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+  <legend>{{ view.form_name }}</legend>
+</fieldset>
+
+<form class="layui-form" id="BaseForm" name="BaseForm" action="">
+
+    {% for field in form %}
+        {{ field.field.type }}
+    <div class="layui-form-item">
+    <label class="layui-form-label">{{ field.label }}</label>
+        <div class="layui-input-block">
+          {{ field }}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="*">提交</button>
+        </div>
+    </div>
+</form>
+
+</body>
+
+<script src="/static/plugins/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'laydate', 'jquery'], function(){
+    var form = layui.form(),
+            $ = layui.jquery,
+            laydate = layui.laydate;
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+    //监听提交
+    form.on('submit(*)', function(data){
+
+        $.ajax({
+          type: "post",
+          url: "{{ view.ajax_url }}",
+          data: $('#BaseForm').serialize(),
+          async: false,
+          dataType: 'json',
+          success: function(data){
+              if( data.result =="failure" )
+              {
+                  layer.alert(data.code);
+              }else{
+                  parent.layer.close(index);
+                  parent.layer.msg('创建成功', {time: 1000});
+                  parent.location.reload()
+
+              }
+          }
+        });
+        return false;
+    });
+});
+
+</script>
+</html>
