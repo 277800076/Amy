@@ -18,5 +18,4 @@ urlpatterns = [
     url(r'^user/create/', view=CreateUserFormView.as_view(), name='create_user'),
     url(r'^api/user/$', view=UserRestApi.as_view(), name='user_rest'),
     url(r'^api/user/(.+)/$', view=UserRestApi.as_view(), name='user_rest'),
-
 ]

@@ -50,3 +50,14 @@ class DockerContainerOption(models.Model):
 
     class Meta:
         db_table = 'docker_container_option'
+
+
+class DockerImages(models.Model):
+    images = models.CharField(max_length=64, verbose_name=u'镜像名称')
+    registry = models.ForeignKey(Registry, null=True, verbose_name=u'镜像仓库')
+
+    def __unicode__(self):
+        return self.images
+
+    class Meta:
+        db_table = 'docker_images'

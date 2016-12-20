@@ -10,27 +10,31 @@ from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 
 
-class StringFiled(CharField):
+class StringField(CharField):
     widget = TextInput(attrs={'class': 'layui-input'})
+
+
+class RequiredStringField(CharField):
+    widget = TextInput(attrs={'class': 'layui-input', 'lay-verify': 'required'})
 
 
 class PasswordField(CharField):
     widget = PasswordInput(attrs={'class': 'layui-input'})
 
 
-class EmailFiled(CharField):
+class EmailField(CharField):
     widget = TextInput(attrs={'class': 'layui-input', 'lay-verify': 'email'})
 
 
-class PhoneFiled(CharField):
+class PhoneField(CharField):
     widget = TextInput(attrs={'class': 'layui-input', 'lay-verify': 'phone'})
 
 
-class UrlFiled(CharField):
+class UrlField(CharField):
     widget = TextInput(attrs={'class': 'layui-input', 'lay-verify': 'url'})
 
 
-class IdentityFiled(CharField):
+class IdentityField(CharField):
     widget = TextInput(attrs={'class': 'layui-input', 'lay-verify': 'identity'})
 
 

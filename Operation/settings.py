@@ -38,7 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'layui',
-    'amy'
+    'amy',
+    'docker_ui'
 )
 
 MIDDLEWARE_CLASSES = (
