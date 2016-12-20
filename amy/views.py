@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 from django.contrib import auth
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseRedirect, QueryDict
-from django.views.generic import TemplateView, View
 from django.forms.models import model_to_dict
-from models import Menus
-from layui.views import LayUiTableViews, LayUiFormViews
-from api import RestApi
-from forms import CreateUserForm, CreateMenuForm, SubMenuForm
-from action import DeleteAction, ChangePassAction, EnableUserAction, AddUserBtn, DeleteMenuAction, AddMenuBtn
+from django.http import JsonResponse, HttpResponseRedirect, QueryDict
+from django.views.generic import TemplateView
+
 from action import AddSubMenuAction
+from action import DeleteAction, ChangePassAction, EnableUserAction, AddUserBtn, DeleteMenuAction, AddMenuBtn
+from forms import CreateUserForm, CreateMenuForm, SubMenuForm
+from layui.api import RestApi
+from layui.views import LayUiTableViews, LayUiFormViews
+from models import Menus
 
 
 class LoginView(TemplateView):

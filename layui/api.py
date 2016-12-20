@@ -98,9 +98,6 @@ class RestViewMixin(object):
             except Exception, e:
                 return JsonResponse(data=self._failure_msg(str(e)))
 
-    def option(self, request, data_id=None, *args, **kwargs):
-        pass
-
     def format_json(self, value):
         if value == 'false':
             return False
