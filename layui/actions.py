@@ -12,9 +12,11 @@ globals_js = {
 
 
 class BtnShow(object):
-    open_url = ''
-    name = u''
-    icon = u''
+
+    def __init__(self, open_url, name, icon=None):
+        self.open_url = open_url
+        self.name = name
+        self.icon = icon or u'fa fa-plus'
 
     def __html__(self):
         return u"""

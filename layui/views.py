@@ -2,6 +2,7 @@
 from django.http import JsonResponse
 from django.views.generic import FormView, TemplateView
 import datetime
+from actions import BtnShow
 
 
 class LayUiFormViews(FormView):
@@ -79,7 +80,7 @@ class LayUiTableViews(TemplateView):
 
     def _get_btn(self):
         if self.btn:
-            return [data().__html__() for data in self.btn]
+            return [BtnShow(**data).__html__() for data in self.btn]
         else:
             return None
 
@@ -92,3 +93,4 @@ class LayUiTableViews(TemplateView):
         kwargs['order'] = self._get_order()
         kwargs['btns'] = self._get_btn()
         return kwargs
+

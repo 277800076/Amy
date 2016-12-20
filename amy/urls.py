@@ -11,11 +11,9 @@ urlpatterns = [
     url(r'^menus/$', view=MenuView.as_view(), name='menus'),
     url(r'^menus/create/', view=CreateMenuFormView.as_view(), name='create_menus'),
     url(r'^menus/sub/create/(.+)/$', view=SubMenuFormView.as_view(), name='create_sub_menus'),
-    url(r'^api/menus/(.+)/$', view=MenusApi.as_view(), name='menus_rest'),
-    url(r'^api/menus/$', view=MenusApi.as_view(), name='menus_rest'),
+    url(r'^', include(MenusApi.urls())),
     url(r'^$', view=IndexView.as_view(), name='index'),
     url(r'^user/$', view=UserList.as_view(), name='user'),
     url(r'^user/create/', view=CreateUserFormView.as_view(), name='create_user'),
-    url(r'^api/user/$', view=UserRestApi.as_view(), name='user_rest'),
-    url(r'^api/user/(.+)/$', view=UserRestApi.as_view(), name='user_rest'),
+    url(r'^', include(UserRestApi.urls())),
 ]

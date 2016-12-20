@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponseRedirect, QueryDict
 from django.views.generic import TemplateView
 
 from action import AddSubMenuAction
-from action import DeleteAction, ChangePassAction, EnableUserAction, AddUserBtn, DeleteMenuAction, AddMenuBtn
+from action import DeleteAction, ChangePassAction, EnableUserAction, DeleteMenuAction
 from forms import CreateUserForm, CreateMenuForm, SubMenuForm
 from layui.api import RestApi
 from layui.views import LayUiTableViews, LayUiFormViews
@@ -50,7 +50,7 @@ class MenuView(LayUiTableViews):
     name = u'菜单列表'
     exclude_field = ('children',)
     action = [DeleteMenuAction, AddSubMenuAction]
-    btn = [AddMenuBtn]
+    btn = [{'open_url': '/menus/create/', 'name': u'添加菜单'}]
 
 
 class CreateMenuFormView(LayUiFormViews):
@@ -134,7 +134,7 @@ class UserList(LayUiTableViews):
     exclude_field = ('password',)
     name = u'用户列表'
     action = [DeleteAction, ChangePassAction, EnableUserAction]
-    btn = [AddUserBtn]
+    btn = [{'open_url': '/user/create/', 'name': u'添加用户'}]
 
 
 class CreateUserFormView(LayUiFormViews):

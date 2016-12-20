@@ -13,11 +13,6 @@ class RestViewMixin(object):
     allowed_method = ['get', 'post', 'get', 'delete', 'option']
     exclude_field = ()
 
-    def __init__(self, models=None, method=None):
-        self.http_method_names = self._method(method)
-        if models is not None:
-            self.models = self._models(models)
-
     def _success_msg(self, data):
         return {'result': 'success', 'data': data}
 
@@ -109,6 +104,12 @@ class RestViewMixin(object):
 
 class RestApi(View, RestViewMixin):
 
-    def __init__(self, *args, **kwargs):
-        super(RestApi, self).__init__(*args, **kwargs)
+    @classmethod
+    def urls(cls):
+        urlpatterns = patterns(
+            '',
+            url(r'api/%s/%s/$' % (cls.models._meta.app_label, cls.models._meta.model_name), view=cls.as_view(), name=cls.__name__),
+            url(r'api/%s/%s/(.+)/$' % (cls.models._meta.app_label, cls.models._meta.model_name), view=cls.as_view(), name=cls.__name__)
+        )
+        return urlpatterns
 
