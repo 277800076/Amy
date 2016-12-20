@@ -12,14 +12,12 @@ Class-based views
 Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.conf.urls import url, include
 
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('amy.urls')),
     url(r'^', include('docker_ui.urls')),
 ]
