@@ -45,10 +45,10 @@ class ContainerTemplateForm(Form):
 
 
 class ImageFrom(Form):
-    name = RequiredStringField(label=u'镜像名称')
+    images = RequiredStringField(label=u'镜像名称')
     registry = ModelChoiceField(queryset=Registry.objects.all(), label=u'仓库')
 
 
 class OptionForm(Form):
     key = ChoiceField(choices=option, label=u'配置')
-    values = StringField(label=u'参数')
+    value = StringField(label=u'参数')

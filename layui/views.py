@@ -26,7 +26,7 @@ class LayUiBaseViews(object):
         else:
             return None
 
-    def get_queryset(self):
+    def get_queryset(self, *args, **kwargs):
         return self.models.objects.all()
 
     @staticmethod
@@ -135,13 +135,13 @@ class LayUiTableMixin(LayUiBaseViews):
     btn = []
     list_display = ()
 
-    def _get_td(self, request):
+    def _get_td(self, request, *args, **kwargs):
         _html = u''
-        for obj in self.get_queryset():
+        for obj in self.get_queryset(*args, **kwargs):
             _td = ''.join([self._format_value(obj, _field)
                            for _field in self._get_list_display if hasattr(obj, _field)])
 
-            actions = [JSAction(request, obj, **act) for act in self.action]
+            actions = [act(request, obj) for act in self.action]
             actions.append(JSAction(request, obj, **{'action_type': 'delete', 'icon': 'fa fa-trash'}))
 
             _td += u'<td>{}</td>'.format(''.join([act.__html__() for act in actions]))
@@ -181,7 +181,7 @@ class LayUiTableMixin(LayUiBaseViews):
         else:
             return 0
 
-    def _get_btn(self):
+    def _get_btn(self, *args, **kwargs):
         _btn = [{
             'open_url': '/%s/%s/create/' % (self.models._meta.app_label, self.models._meta.model_name),
             'name': u'添加' + self.get_name(),
@@ -190,20 +190,19 @@ class LayUiTableMixin(LayUiBaseViews):
         self.btn = self.btn + _btn
         return [BtnShow(**data).__html__() for data in self.btn]
 
-    def get_context_data(self, request, **kwargs):
+    def get_context_data(self, request, *args, **kwargs):
         if 'view' not in kwargs:
             kwargs['view'] = self
         kwargs['object_list'] = self.get_queryset()
         kwargs['table_td'] = self._get_td(request)
         kwargs['table_th'] = self._table_th()
         kwargs['order'] = self._get_order()
-        kwargs['btns'] = self._get_btn()
-        print kwargs['btns']
+        kwargs['btns'] = self._get_btn(*args, **kwargs)
         return kwargs
 
     @classmethod
     def table(cls, request, *args, **kwargs):
-        context = cls().get_context_data(request)
+        context = cls().get_context_data(request, *args, **kwargs)
         return render_to_response(template_name=cls.table_template, context=context)
 
 
@@ -226,3 +225,14 @@ class RestApi(View,
                 name=cls.__name__)
         )
         return urlpatterns
+
+
+class LayUiFromView(FormView, LayUIFormMixin):
+    template_name = 'form.html'
+    api_url = ''
+
+    def get(self, request, *args, **kwargs):
+        form = self.get_form()
+        return self.render_to_response(self.get_context_data(form=form))
+
+

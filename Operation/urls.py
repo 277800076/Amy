@@ -19,4 +19,5 @@ from django.conf.urls import url, include
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include('amy.urls')),
+    url(r'^', include('docker_ui.urls')),
 ]

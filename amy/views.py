@@ -6,8 +6,9 @@ from django.forms.models import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect, QueryDict
 from django.views.generic import TemplateView
 from forms import CreateUserForm, CreateMenuForm, SubMenuForm
-from layui.views import RestApi
+from layui.views import RestApi, LayUiFromView
 from models import Menus
+from action import ChangePassAction, EnableUserAction, AddSubMenuAction
 
 
 class LoginView(TemplateView):
@@ -46,6 +47,7 @@ class MenusApi(RestApi):
     form_class = CreateMenuForm
     name = u'菜单'
     form_name = u'创建菜单'
+    action = [AddSubMenuAction]
 
     @property
     def _get_menus(self):
@@ -113,12 +115,24 @@ class MenusApi(RestApi):
                 return JsonResponse(data=self._failure_msg(str(e)))
 
 
+class AddSubMenuView(LayUiFromView):
+    form_class = SubMenuForm
+    api_url = '/api/amy/menus/{}/'
+    form_name = u'添加子菜单'
+
+    def get(self, request, *args, **kwargs):
+        menu_id = args[0]
+        form = self.get_form()
+        return self.render_to_response(self.get_context_data(form=form, api_url=self.api_url.format(menu_id)))
+
+
 class UserRestApi(RestApi):
     models = User
     form_class = CreateUserForm
     form_name = u'创建用户'
     name = u'用户'
     list_display = ('id', 'username', 'email', 'is_active', 'last_login')
+    action = [ChangePassAction, EnableUserAction]
 
     def post(self, request, data_id=None, *args, **kwargs):
         try:

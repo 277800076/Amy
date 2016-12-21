@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'layui',
     'amy',
-    #'docker_ui'
+    'docker_ui'
 )
 
 MIDDLEWARE_CLASSES = (

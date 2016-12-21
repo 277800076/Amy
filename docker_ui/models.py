@@ -29,9 +29,7 @@ class LogServer(models.Model):
 
 class DockerContainerTemplate(models.Model):
     name = models.CharField(max_length=32, verbose_name=u'容器名')
-    images = models.CharField(max_length=32, verbose_name=u'镜像名')
-    log_server = models.ForeignKey(LogServer, null=True, verbose_name=u'日志服务器')
-    registry = models.ForeignKey(Registry, null=True, verbose_name=u'镜像仓库')
+    images = models.ForeignKey('DockerImages', verbose_name=u'镜像名')
 
     def __unicode__(self):
         return self.name

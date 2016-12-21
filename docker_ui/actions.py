@@ -4,28 +4,12 @@
 from layui.actions import BtnShow, JSAction
 
 
-# create coding
-class DeleteRegistry(JSAction):
-    name = u'删除'
-    icon = u'fa fa-trash'
-    action_url = '/api/docker/registry/'
-    action_type = 'delete'
-
-
-class CreateRegistryBtn(BtnShow):
-    open_url = '/docker/registry/create/'
+class TemplateOptionAction(JSAction):
+    name = u'添加子菜单'
     icon = u'fa fa-plus'
-    name = u'新增仓库'
+    action_type = 'show'
+    action_url = '/docker_ui/dockercontaineroption/{}'
 
-
-class DeleteLogServer(JSAction):
-    name = u'删除'
-    icon = u'fa fa-trash'
-    action_url = '/api/docker/log'
-    action_type = 'delete'
-
-
-class CreateLogServerBtn(BtnShow):
-    open_url = '/docker/log/create/'
-    icon = u'fa fa-plus'
-    name = u'新增日志'
+    def __html__(self):
+        _html = u'''<a href="javascript:;" onclick="{js}('{title}', '{url}')" title={title}>{icon}</a>&nbsp;'''
+        return _html.format(url=self.action_url.format(self.obj.id), js=self._js, icon=self._get_icon, title=self.name)
