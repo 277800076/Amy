@@ -49,7 +49,7 @@
 
         $.ajax({
           type: "post",
-          url: "{{ view.ajax_url }}",
+          url: "{{ api_url }}",
           data: $('#BaseForm').serialize(),
           async: false,
           dataType: 'json',

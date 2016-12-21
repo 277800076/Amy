@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 from action import AddSubMenuAction
 from action import DeleteAction, ChangePassAction, EnableUserAction, DeleteMenuAction
 from forms import CreateUserForm, CreateMenuForm, SubMenuForm
-from layui.api import RestApi
+from layui.views import RestApi
 from layui.views import LayUiTableViews, LayUiFormViews
 from models import Menus
 
@@ -185,4 +185,3 @@ class UserRestApi(RestApi):
                 return JsonResponse(data=self._success_msg(data=None))
             except Exception, e:
                 return JsonResponse(data=self._failure_msg(str(e)))
-

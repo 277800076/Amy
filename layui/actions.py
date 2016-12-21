@@ -12,7 +12,6 @@ globals_js = {
 
 
 class BtnShow(object):
-
     def __init__(self, open_url, name, icon=None):
         self.open_url = open_url
         self.name = name
@@ -33,9 +32,11 @@ class JSAction(object):
     description = ''
     model_perm = 'change'
 
-    def __init__(self, request, obj):
+    def __init__(self, request, obj, action_type):
         self.obj = obj
-        assert request.user.has_perm(self.model_perm, obj)
+        # assert request.user.has_perm(self.model_perm, obj)
+        if action_type:
+            self.action_type = action_type
 
     @property
     def _get_icon(self):
@@ -48,7 +49,10 @@ class JSAction(object):
 
     @property
     def _action_url(self):
-        return self.action_url + '/' + str(self.obj.id)
+        if self.action_url:
+            return self.action_url.rstrip('/') + '/' + str(self.obj.id)
+        else:
+            return '/api/%s/%s/%s' % (self.obj._meta.app_label, self.obj._meta.model_name, str(self.obj.id))
 
     def __html__(self):
         _html = u'''<a href="javascript:;" onclick="{js}(this, '{url}')" title={title}>{icon}</a>&nbsp;'''
