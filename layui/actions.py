@@ -28,15 +28,17 @@ class JSAction(object):
     name = u''
     icon = u'fa fa-tasks'
     action_url = ''
-    action_type = ''
+    action_type = 'delete'
     description = ''
     model_perm = 'change'
 
-    def __init__(self, request, obj, action_type):
+    def __init__(self, request, obj, action_type=None, icon=None):
         self.obj = obj
         # assert request.user.has_perm(self.model_perm, obj)
         if action_type:
             self.action_type = action_type
+        if icon:
+            self.icon = icon
 
     @property
     def _get_icon(self):

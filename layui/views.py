@@ -20,6 +20,12 @@ class LayUiBaseViews(object):
     def _failure_msg(code):
         return {'result': 'failure', 'code': code}
 
+    def get_name(self):
+        if self.name:
+            return self.name
+        else:
+            return None
+
     def get_queryset(self):
         return self.models.objects.all()
 
@@ -134,15 +140,11 @@ class LayUiTableMixin(LayUiBaseViews):
         for obj in self.get_queryset():
             _td = ''.join([self._format_value(obj, _field)
                            for _field in self._get_list_display if hasattr(obj, _field)])
-            if self.action:
-                _td += u'<td>{}</td>'.format(''.join([JSAction(request, obj, **act).__html__() for act in self.action]))
-            else:
-                self.action.append({
-                    'action_type': 'delete'
-                })
-                _td += u'<td>{}</td>'.format(
-                    ''.join([JSAction(request, obj, **act).__html__() for act in self.action]))
 
+            actions = [JSAction(request, obj, **act) for act in self.action]
+            actions.append(JSAction(request, obj, **{'action_type': 'delete', 'icon': 'fa fa-trash'}))
+
+            _td += u'<td>{}</td>'.format(''.join([act.__html__() for act in actions]))
             _html += u'<tr>{}</tr>'.format(_td)
         return _html
 
@@ -171,7 +173,7 @@ class LayUiTableMixin(LayUiBaseViews):
         _all_field = [field.name for field in _model_fields]
         _last_filed = [_model_fields[_all_field.index(field)].verbose_name
                        for field in list_display if field in _all_field]
-        return _last_filed + [u'操作'] if self.action else _last_filed
+        return _last_filed + [u'操作']
 
     def _get_order(self):
         if self.order:
@@ -180,12 +182,13 @@ class LayUiTableMixin(LayUiBaseViews):
             return 0
 
     def _get_btn(self):
-        if not self.btn:
-            self.btn.append({
-                'open_url': '/%s/%s/create/' % (self.models._meta.app_label, self.models._meta.model_name),
-                'name': u'添加' + self.name,
-            })
-        return [BtnShow(**data).__html__() for data in self.btn] if self.btn else None
+        _btn = [{
+            'open_url': '/%s/%s/create/' % (self.models._meta.app_label, self.models._meta.model_name),
+            'name': u'添加' + self.get_name(),
+        }]
+
+        self.btn = self.btn + _btn
+        return [BtnShow(**data).__html__() for data in self.btn]
 
     def get_context_data(self, request, **kwargs):
         if 'view' not in kwargs:
@@ -195,6 +198,7 @@ class LayUiTableMixin(LayUiBaseViews):
         kwargs['table_th'] = self._table_th()
         kwargs['order'] = self._get_order()
         kwargs['btns'] = self._get_btn()
+        print kwargs['btns']
         return kwargs
 
     @classmethod

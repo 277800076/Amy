@@ -38,8 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'layui',
-    'idc'
-    #'amy',
+    'amy',
     #'docker_ui'
 )
 
@@ -52,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    # 'amy.middleware.AuthLoginMiddleware'
+    'amy.middleware.AuthLoginMiddleware'
 )
 
 ROOT_URLCONF = 'Operation.urls'

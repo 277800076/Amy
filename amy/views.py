@@ -5,12 +5,8 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect, QueryDict
 from django.views.generic import TemplateView
-
-from action import AddSubMenuAction
-from action import DeleteAction, ChangePassAction, EnableUserAction, DeleteMenuAction
 from forms import CreateUserForm, CreateMenuForm, SubMenuForm
 from layui.views import RestApi
-from layui.views import LayUiTableViews, LayUiFormViews
 from models import Menus
 
 
@@ -45,22 +41,11 @@ class IndexView(TemplateView):
     site = u'Amy Operation'
 
 
-class MenuView(LayUiTableViews):
-    model = Menus
-    name = u'菜单列表'
-    exclude_field = ('children',)
-    action = [DeleteMenuAction, AddSubMenuAction]
-    btn = [{'open_url': '/menus/create/', 'name': u'添加菜单'}]
-
-
-class CreateMenuFormView(LayUiFormViews):
-    form_class = CreateMenuForm
-    form_name = u'创建菜单'
-    ajax_url = '/api/menus/'
-
-
 class MenusApi(RestApi):
     models = Menus
+    form_class = CreateMenuForm
+    name = u'菜单'
+    form_name = u'创建菜单'
 
     @property
     def _get_menus(self):
@@ -77,17 +62,17 @@ class MenusApi(RestApi):
                     {
                         "title": u"用户设置",
                         "icon": "fa-user-o",
-                        "href": "/user"
+                        "href": "/auth/user/"
                     },
-                    {
-                        "title": u"权限设置",
-                        "icon": "fa-lock",
-                        "href": "/auth"
-                    },
+                    # {
+                    #     "title": u"权限设置",
+                    #     "icon": "fa-lock",
+                    #     "href": "/auth"
+                    # },
                     {
                         "title": u"菜单配置",
                         "icon": "fa-navicon",
-                        "href": "/menus"
+                        "href": "/amy/menus"
                     }
                 ]
             }
@@ -128,35 +113,12 @@ class MenusApi(RestApi):
                 return JsonResponse(data=self._failure_msg(str(e)))
 
 
-class UserList(LayUiTableViews):
-    model = User
-    list_display = ('id', 'username', 'email', 'is_active', 'is_superuser', 'last_login')
-    exclude_field = ('password',)
-    name = u'用户列表'
-    action = [DeleteAction, ChangePassAction, EnableUserAction]
-    btn = [{'open_url': '/user/create/', 'name': u'添加用户'}]
-
-
-class CreateUserFormView(LayUiFormViews):
-    form_class = CreateUserForm
-    form_name = u'创建用户'
-    ajax_url = '/api/user/'
-
-
-class SubMenuFormView(LayUiFormViews):
-    form_class = SubMenuForm
-    form_name = u'创建子菜单'
-    ajax_url = '/api/menus/{}/'
-
-    def get(self, request, *args, **kwargs):
-        form = self.get_form()
-        self.ajax_url = self.ajax_url.format(args[0])
-        return self.render_to_response(self.get_context_data(form=form))
-
-
 class UserRestApi(RestApi):
     models = User
-    exclude_field = ('password',)
+    form_class = CreateUserForm
+    form_name = u'创建用户'
+    name = u'用户'
+    list_display = ('id', 'username', 'email', 'is_active', 'last_login')
 
     def post(self, request, data_id=None, *args, **kwargs):
         try:

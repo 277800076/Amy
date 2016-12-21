@@ -24,7 +24,7 @@ layui.config({
 		// data: navs,
         cached: false,
 		// url: '/api/menus/?format=json'
-		url: '/api/menus'
+		url: '/api/amy/menus'
 		/*cached:true,
 		url: 'datas/nav.json'*/
 	});

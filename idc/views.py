@@ -6,9 +6,9 @@ from amy.forms import CreateUserForm
 
 
 # Create your views here.
-class TestRestApi(RestApi):
-    models = User
-    form_class = CreateUserForm
-    form_name = u'创建用户'
-    name = u'用户'
-    exclude_field = ('password', 'is_superuser')
+# class TestRestApi(RestApi):
+#     models = User
+#     form_class = CreateUserForm
+#     form_name = u'创建用户'
+#     name = u'用户'
+#     exclude_field = ('password', 'is_superuser')

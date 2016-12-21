@@ -3,19 +3,6 @@
 from layui.actions import JSAction, BtnShow
 
 
-class DeleteAction(JSAction):
-    name = u'删除'
-    icon = u'fa fa-trash'
-    action_url = '/api/user'
-    action_type = 'delete'
-
-
-class DeleteMenuAction(JSAction):
-    name = u'删除'
-    icon = u'fa fa-trash'
-    action_url = '/api/menus'
-    action_type = 'delete'
-
 
 class ChangePassAction(JSAction):
     name = u'修改密码'
@@ -65,15 +52,3 @@ class AddSubMenuAction(JSAction):
     def __html__(self):
         _html = u'''<a href="javascript:;" onclick="{js}('{title}', '{url}')" title={title}>{icon}</a>&nbsp;'''
         return _html.format(url=self._action_url, js=self._js, icon=self._get_icon, title=self.name)
-
-
-class AddUserBtn(BtnShow):
-    open_url = '/user/create/'
-    name = u'添加用户'
-    icon = u'fa fa-user'
-
-
-class AddMenuBtn(BtnShow):
-    open_url = '/menus/create/'
-    name = u'添加菜单'
-    icon = u'fa fa-list'
