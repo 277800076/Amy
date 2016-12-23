@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from django.db import models
+from layui.models import ListField
 
 
 class Registry(models.Model):
@@ -23,31 +24,17 @@ class LogServer(models.Model):
     def __unicode__(self):
         return "%s:%s-%s" % (self.address, self.port, self.tag)
 
+    def log_config(self):
+        return {
+            "Type": "gelf",
+            "Config": {
+                "gelf-address": "udp://%s:%s" % (self.address, self.port),
+                "tag": self.tag
+            }
+        }
+
     class Meta:
         db_table = 'docker_log_option'
-
-
-class DockerContainerTemplate(models.Model):
-    name = models.CharField(max_length=32, verbose_name=u'容器名')
-    images = models.ForeignKey('DockerImages', verbose_name=u'镜像名')
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'docker_container_template'
-
-
-class DockerContainerOption(models.Model):
-    key = models.CharField(max_length=32, null=False, verbose_name=u'键')
-    value = models.CharField(max_length=64, null=False, verbose_name=u'值')
-    container = models.ForeignKey(DockerContainerTemplate, verbose_name=u'容器')
-
-    def __unicode__(self):
-        return '%s=%s' % (self.key, self.value)
-
-    class Meta:
-        db_table = 'docker_container_option'
 
 
 class DockerImages(models.Model):
@@ -59,3 +46,38 @@ class DockerImages(models.Model):
 
     class Meta:
         db_table = 'docker_images'
+
+
+class DockerHost(models.Model):
+    address = models.CharField(max_length=64, verbose_name=u'地址')
+    port = models.IntegerField(verbose_name=u'端口')
+    tag = models.CharField(max_length=64, verbose_name=u'类型')
+
+    def __unicode__(self):
+        return "%s-%s" % (self.tag, self.address)
+
+    @property
+    def base_url(self):
+        return 'tcp://{host}:{port}'.format(host=self.host, port=self.port)
+
+    class Meta:
+        db_table = 'docker_host_config'
+
+
+class DockerTemplateOption(models.Model):
+    name = models.CharField(max_length=32, verbose_name=u'容器名')
+    binds = ListField(verbose_name=u'目录映射')
+    port_bindings = ListField(verbose_name=u'端口映射')
+    publish_all_ports = models.BooleanField(default=False, verbose_name=u'端口随机')
+    privileged = models.BooleanField(default=True, verbose_name=u'超级权限')
+    network_mode = models.BooleanField(default=False, verbose_name=u'host模式')
+    extra_hosts = ListField(verbose_name=u'主机映射')
+    environment = ListField(verbose_name=u'环境变量')
+    command = models.CharField(max_length=64, verbose_name=u'命令')
+    images = models.ForeignKey(DockerImages, verbose_name=u'镜像')
+
+    def __unicode__(self):
+        return '%s-option' % self.template
+
+    class Meta:
+        db_table = 'docker_container_option'

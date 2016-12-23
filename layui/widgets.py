@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from django.forms.fields import ChoiceField
 from django.forms.widgets import TextInput, NumberInput, RadioSelect, RadioFieldRenderer, RadioChoiceInput, PasswordInput
-from django.forms.fields import CharField, IntegerField
+from django.forms.fields import CharField, IntegerField, MultipleChoiceField
 from django.utils.html import format_html
 from django.forms.utils import flatatt
 from django.utils.html import conditional_escape

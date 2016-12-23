@@ -19,7 +19,6 @@
 <form class="layui-form" id="BaseForm" name="BaseForm" action="">
 
     {% for field in form %}
-        {{ field.field.type }}
     <div class="layui-form-item">
     <label class="layui-form-label">{{ field.label }}</label>
         <div class="layui-input-block">
@@ -46,11 +45,10 @@
             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
     //监听提交
     form.on('submit(*)', function(data){
-
         $.ajax({
           type: "post",
           url: "{{ api_url }}",
-          data: $('#BaseForm').serialize(),
+          data: data.field,
           async: false,
           dataType: 'json',
           success: function(data){
