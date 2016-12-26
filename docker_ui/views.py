@@ -32,21 +32,6 @@ class ImageApi(RestApi):
     form_name = u'新增镜像'
     models = DockerImages
 
-    def _post(self, **kwargs):
-        data = Dict(kwargs)
-        registry = Registry.objects.get(pk=data.pop('registry'))
-        data['registry'] = registry
-        return data
-
-    def post(self, request, data_id=None, *args, **kwargs):
-        try:
-            post = {v: self.format_json(request.POST.dict()[v]) for v in request.POST.dict()}
-            data = self.models(**self._post(**post))
-            data.save()
-            return JsonResponse(data=self._success_msg(None), safe=False)
-        except Exception, e:
-            return JsonResponse(data=self._failure_msg(str(e)))
-
 
 class DockerHostApi(RestApi):
     name = u'主机'
@@ -58,20 +43,6 @@ class DockerHostApi(RestApi):
 class DockerTemplateOptionApi(RestApi):
     name = u'模版'
     form_class = DockerTemplateOptionForm
+    form_template = 'template_add.html'
     form_name = u'创建模版'
     models = DockerTemplateOption
-
-    def save(self, request):
-        print request.POST.dict()
-        print self.models._meta.local_fields
-
-    def post(self, request, data_id=None, *args, **kwargs):
-        self.save(request)
-        try:
-            post = {v: self.format_json(request.POST.dict()[v]) for v in request.POST.dict()}
-            data = self.models(**post)
-            data.save()
-            return JsonResponse(data=self._success_msg(None), safe=False)
-        except Exception, e:
-            print e
-            return JsonResponse(data=self._failure_msg(str(e)))

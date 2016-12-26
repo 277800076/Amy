@@ -59,7 +59,11 @@ ROOT_URLCONF = 'Operation.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'layui/templates'), os.path.join(BASE_DIR, 'template')]
+        'DIRS': [
+            os.path.join(BASE_DIR, 'layui/templates'),
+            os.path.join(BASE_DIR, 'docker_ui/templates'),
+            os.path.join(BASE_DIR, 'template')
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {

@@ -4,8 +4,9 @@ from django.conf.urls import include, url, patterns
 from django.views.generic import FormView, View
 from django.shortcuts import render_to_response
 import datetime
-from actions import BtnShow
-from actions import JSAction
+from actions import BtnShow, JSAction
+from django.db.models import ForeignKey
+from models import ListField
 
 
 class LayUiBaseViews(object):
@@ -34,6 +35,8 @@ class LayUiBaseViews(object):
         if value == 'false':
             return False
         elif value == 'true':
+            return True
+        elif value == 'on':
             return True
         else:
             return value
@@ -77,6 +80,24 @@ class RestViewMixin(LayUiBaseViews):
     def _list_display(self):
         return [field.name for field in self.models._meta.local_fields if field.name not in self.exclude_field]
 
+    def get_foreign(self, field, value):
+        _f = field.related_model()
+        models = _f._meta.model
+        return models.objects.get(pk=int(value))
+
+    def save(self, request):
+        _post = request.POST.dict()
+        foreign = [field for field in self.models._meta.local_fields if type(field) == ForeignKey]
+        for _field in foreign:
+            if _field.name in _post:
+                _f = _post[_field.name]
+                if _f:
+                    _post[_field.name] = self.get_foreign(_field, _f)
+                else:
+                    del _post[_field.name]
+        list_field = [field for field in self.models._meta.local_fields if type(field) == ListField]
+        return _post, {_field.name: _post.pop(_field.name)for _field in list_field if _field.name in _post}
+
     def get(self, request, data_id=None, *args, **kwargs):
         if data_id is None:
             try:
@@ -93,9 +114,14 @@ class RestViewMixin(LayUiBaseViews):
                 return JsonResponse(data=self._failure_msg(str(e)), safe=False)
 
     def post(self, request, data_id=None, *args, **kwargs):
+        _data, _list_field = self.save(request)
         try:
-            post = {v: self.format_json(request.POST.dict()[v]) for v in request.POST.dict()}
+            post = {v: self.format_json(_data[v]) for v in _data}
             data = self.models(**post)
+            if _list_field:
+                for _field in _list_field:
+                    field = getattr(data, _field)
+                    field.append(_list_field[_field])
             data.save()
             return JsonResponse(data=self._success_msg(None), safe=False)
         except Exception, e:

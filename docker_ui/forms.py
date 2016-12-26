@@ -33,7 +33,6 @@ class LogServerForm(Form):
 
 class CreateDockerContainerForm(Form):
     name = StringField(label=u'容器名')
-    # template = ModelChoiceField(queryset=DockerContainerTemplate.objects.all(), label=u'模版')
     version = StringField(label=u'版本')
     log_server = ModelChoiceField(queryset=LogServer.objects.all(), label=u'日志服务')
     custom = StringField(label=u'自定义')
@@ -61,15 +60,6 @@ class DockerHostAddForm(Form):
 
 
 class DockerTemplateOptionForm(Form):
-    name = RequiredStringField(label=u'容器名')
-    binds = StringField(label=u'目录映射')
-    port_bindings = StringField(label=u'端口映射')
-    publish_all_ports = BooleanField(label=u'端口随机')
-    privileged = BooleanField(label=u'超级权限')
-    network_mode = BooleanField(label=u'host模式')
-    extra_hosts = StringField(label=u'主机映射')
-    environment = StringField(label=u'环境变量')
-    command = StringField(label=u'命令')
     images = ModelChoiceField(queryset=DockerImages.objects.all(), label=u'镜像')
 
     def __unicode__(self):
