@@ -5,8 +5,11 @@ from docker import Client
 
 class Docker(object):
 
-    def __init__(self, host='localhost', port='2375', registry=None, version='1.24'):
-        self.base_url = 'tcp://{host}:{port}'.format(host=host, port=port)
+    def __init__(self, base_url=None, host='localhost', port='2375', registry=None, version='1.24'):
+        if base_url is None:
+            self.base_url = 'tcp://{host}:{port}'.format(host=host, port=port)
+        else:
+            self.base_url = base_url
         self.version = version
         self.client = self.__get_client
         if registry is not None:
@@ -80,3 +83,8 @@ class Docker(object):
 
     def __del__(self):
         self.client.close()
+
+if __name__ == '__main__':
+    docker = Docker(host='192.168.199.97')
+    for container in docker.containers_list():
+        print container[u'Status']

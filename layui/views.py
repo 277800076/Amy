@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.http import JsonResponse, QueryDict
 from django.conf.urls import include, url, patterns
+from addict import Dict
 from django.views.generic import FormView, View
 from django.shortcuts import render_to_response
 import datetime
@@ -260,5 +261,20 @@ class LayUiFromView(FormView, LayUIFormMixin):
     def get(self, request, *args, **kwargs):
         form = self.get_form()
         return self.render_to_response(self.get_context_data(form=form))
+
+
+class Json2Models(object):
+
+    def __init__(self, data_list):
+        self.data_list = data_list
+
+    def all_field(self):
+        _fields = list(set([_field.keys() for _field in self.data_list]))
+        if len(_fields) != 1:
+            return _fields[0]
+        else:
+            return False
+
+
 
 

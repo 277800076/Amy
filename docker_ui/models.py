@@ -58,7 +58,7 @@ class DockerHost(models.Model):
 
     @property
     def base_url(self):
-        return 'tcp://{host}:{port}'.format(host=self.host, port=self.port)
+        return 'tcp://{host}:{port}'.format(host=self.address, port=self.port)
 
     class Meta:
         db_table = 'docker_host_config'
