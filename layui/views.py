@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 import datetime
 from actions import BtnShow, JSAction
 from django.db.models import ForeignKey
-from models import ListField
+from models import ListField, DictField
 
 
 class LayUiBaseViews(object):
@@ -28,7 +28,7 @@ class LayUiBaseViews(object):
         else:
             return None
 
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self, request, *args, **kwargs):
         return self.models.objects.all()
 
     @staticmethod
@@ -42,7 +42,7 @@ class LayUiBaseViews(object):
         else:
             return value
 
-    def get_api_url(self):
+    def get_api_url(self, request, *args, **kwargs):
         return r'/api/%s/%s/' % (self.models._meta.app_label, self.models._meta.model_name)
 
     def table(self, request, *args, **kwargs):
@@ -65,7 +65,7 @@ class LayUIFormMixin(LayUiBaseViews):
         context = {
             'form': cls.form_class(),
             'view': cls,
-            'api_url': cls().get_api_url()
+            'api_url': cls().get_api_url(request, *args, **kwargs)
         }
         return render_to_response(template_name=cls.form_template, context=context)
 
@@ -97,7 +97,8 @@ class RestViewMixin(LayUiBaseViews):
                 else:
                     del _post[_field.name]
         list_field = [field for field in self.models._meta.local_fields if type(field) == ListField]
-        return _post, {_field.name: _post.pop(_field.name)for _field in list_field if _field.name in _post}
+        dict_field = [field for field in self.models._meta.local_fields if type(field) == DictField]
+        return _post, {_field.name: _post.pop(_field.name)for _field in list_field if _field.name in _post}, dict_field
 
     def get(self, request, data_id=None, *args, **kwargs):
         if data_id is None:
@@ -115,7 +116,7 @@ class RestViewMixin(LayUiBaseViews):
                 return JsonResponse(data=self._failure_msg(str(e)), safe=False)
 
     def post(self, request, data_id=None, *args, **kwargs):
-        _data, _list_field = self.save(request)
+        _data, _list_field, _dict_field = self.save(request)
         try:
             post = {v: self.format_json(_data[v]) for v in _data}
             data = self.models(**post)
@@ -123,6 +124,11 @@ class RestViewMixin(LayUiBaseViews):
                 for _field in _list_field:
                     field = getattr(data, _field)
                     field.append(_list_field[_field])
+            if _dict_field:
+                for _field in _dict_field:
+                    field = getattr(data, _field)
+                    field.update({value.split('=')[0]: value.split('=')[1] for value in _dict_field[_field].split(',')})
+
             data.save()
             return JsonResponse(data=self._success_msg(None), safe=False)
         except Exception, e:
@@ -164,7 +170,7 @@ class LayUiTableMixin(LayUiBaseViews):
 
     def _get_td(self, request, *args, **kwargs):
         _html = u''
-        for obj in self.get_queryset(*args, **kwargs):
+        for obj in self.get_queryset(request, *args, **kwargs):
             _td = ''.join([self._format_value(obj, _field)
                            for _field in self._get_list_display if hasattr(obj, _field)])
 
@@ -220,7 +226,7 @@ class LayUiTableMixin(LayUiBaseViews):
     def get_context_data(self, request, *args, **kwargs):
         if 'view' not in kwargs:
             kwargs['view'] = self
-        kwargs['object_list'] = self.get_queryset()
+        kwargs['object_list'] = self.get_queryset(request)
         kwargs['table_td'] = self._get_td(request)
         kwargs['table_th'] = self._table_th()
         kwargs['order'] = self._get_order()
@@ -262,18 +268,6 @@ class LayUiFromView(FormView, LayUIFormMixin):
         form = self.get_form()
         return self.render_to_response(self.get_context_data(form=form))
 
-
-class Json2Models(object):
-
-    def __init__(self, data_list):
-        self.data_list = data_list
-
-    def all_field(self):
-        _fields = list(set([_field.keys() for _field in self.data_list]))
-        if len(_fields) != 1:
-            return _fields[0]
-        else:
-            return False
 
 
 

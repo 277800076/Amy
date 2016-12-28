@@ -99,7 +99,7 @@ function container_start(url, id) {
                 data: {id: id, option: 'start'},
                 dataType: 'json',
                 success: function(data){
-                    if( data.result =="Error" )
+                    if( data.result =="failure" )
                     {
                         layer.alert(data.code);
                     }else{
@@ -120,12 +120,12 @@ function container_stop(url, id) {
                 data: {id: id, option: 'stop'},
                 dataType: 'json',
                 success: function(data){
-                    if( data.result =="Error" )
+                    if( data.result =="failure" )
                     {
-                        layer.alert(data.message);
+                        layer.alert(data.code);
                     }else{
                         layer.close(index);
-                        layer.msg('已启用', {time: 1000});
+                        layer.msg('已停用', {time: 1000});
                     }
                 }
             });

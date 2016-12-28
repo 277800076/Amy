@@ -7,7 +7,9 @@
 globals_js = {
     'delete': 'data_delete',
     'change_pass': 'change_pass',
-    'show': 'form_show'
+    'show': 'form_show',
+    'container_stop': 'container_stop',
+    'container_start': 'container_start'
 }
 
 
@@ -34,7 +36,6 @@ class JSAction(object):
 
     def __init__(self, request, obj, action_type=None, icon=None):
         self.obj = obj
-        # assert request.user.has_perm(self.model_perm, obj)
         if action_type:
             self.action_type = action_type
         if icon:

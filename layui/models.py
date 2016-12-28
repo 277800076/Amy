@@ -36,7 +36,7 @@ class DictField(models.TextField):
 
     def to_python(self, value):
         if not value:
-            value = []
+            value = {}
 
         if isinstance(value, dict):
             return value

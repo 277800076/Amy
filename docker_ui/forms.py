@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from django.forms import Form, ModelForm
-from layui.widgets import RequiredStringField, StringField, ChoiceField, NumberField, RadioField, MultipleChoiceField
+from layui.widgets import RequiredStringField, StringField, ChoiceField, NumberField
 from django.forms import BooleanField, ModelChoiceField
-from models import LogServer, DockerImages, Registry
+from models import LogServer, DockerImages, Registry, DockerTemplateOption
 
 
 option = (
@@ -34,6 +34,7 @@ class LogServerForm(Form):
 class CreateDockerContainerForm(Form):
     name = StringField(label=u'容器名')
     version = StringField(label=u'版本')
+    template = ModelChoiceField(queryset=DockerTemplateOption.objects.all(), label=u'模版')
     log_server = ModelChoiceField(queryset=LogServer.objects.all(), label=u'日志服务')
     custom = StringField(label=u'自定义')
 

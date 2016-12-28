@@ -17,7 +17,7 @@ class Docker(object):
 
     @property
     def __get_client(self):
-        return Client(base_url=self.base_url, version=self.version, timeout=5)
+        return Client(base_url=self.base_url, version=self.version, timeout=3)
 
     def _login_registry(self, username=None, password=None, registry=None):
         self.client.login(username=username, password=password, registry=registry)
