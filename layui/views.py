@@ -78,6 +78,14 @@ class RestViewMixin(LayUiBaseViews):
         return self.models.objects.all()
 
     @property
+    def foreign_field(self):
+        return [field for field in self.models._meta.local_fields if type(field) == ForeignKey]
+
+    @property
+    def list_field(self):
+        return [field for field in self.models._meta.local_fields if type(field) == ListField]
+
+    @property
     def _list_display(self):
         return [field.name for field in self.models._meta.local_fields if field.name not in self.exclude_field]
 
@@ -88,16 +96,20 @@ class RestViewMixin(LayUiBaseViews):
 
     def save(self, request):
         _post = request.POST.dict()
-        foreign = [field for field in self.models._meta.local_fields if type(field) == ForeignKey]
-        for _field in foreign:
+        for _field in self.foreign_field:
             if _field.name in _post:
                 _f = _post[_field.name]
                 if _f:
                     _post[_field.name] = self.get_foreign(_field, _f)
                 else:
                     del _post[_field.name]
-        list_field = [field for field in self.models._meta.local_fields if type(field) == ListField]
-        return _post, {_field.name: _post.pop(_field.name)for _field in list_field if _field.name in _post}
+        post = {v: self.format_json(_post[v]) for v in _post}
+        data = self.models(**post)
+        if self.list_field:
+            for _field in self.list_field:
+                field = getattr(data, _field)
+                field.append(self.list_field[_field])
+        data.save()
 
     def get(self, request, data_id=None, *args, **kwargs):
         if data_id is None:
@@ -115,28 +127,37 @@ class RestViewMixin(LayUiBaseViews):
                 return JsonResponse(data=self._failure_msg(str(e)), safe=False)
 
     def post(self, request, data_id=None, *args, **kwargs):
-        _data, _list_field = self.save(request)
         try:
-            post = {v: self.format_json(_data[v]) for v in _data}
-            data = self.models(**post)
-            if _list_field:
-                for _field in _list_field:
-                    field = getattr(data, _field)
-                    field.append(_list_field[_field])
-            data.save()
+            self.save(request)
             return JsonResponse(data=self._success_msg(None), safe=False)
         except Exception, e:
             return JsonResponse(data=self._failure_msg(str(e)))
+
+    def update(self, request, data_id):
+        data_id = int(data_id)
+        data = self.query_set.get(id=data_id)
+        _put = QueryDict(request.body, encoding=request.encoding)
+        for key in _put.keys():
+            _v = _put[key]
+            if _v:
+                if key in self.foreign_field:
+                    _field = self.foreign_field[self.foreign_field.index(key)]
+                    data.__setattr__(_field, self.get_foreign(_field, _v))
+                    del _put[key]
+                if key in self.list_field:
+                    _field = self.list_field[self.list_field.index(key)]
+                    _field.append(_v)
+                    del _put[key]
+            else:
+                del _put[key]
+        data.update(**_put).save()
 
     def put(self, request, data_id=None, *args, **kwargs):
         if data_id is None:
             return JsonResponse(data=self._failure_msg(u'No specified data ID'))
         else:
             try:
-                data_id = int(data_id)
-                data = self.query_set.get(id=data_id)
-                put = QueryDict(request.body, encoding=request.encoding)
-                data.update(**put).save()
+                self.update(request, data_id)
                 return JsonResponse(data=self._success_msg(data=None))
             except Exception, e:
                 return JsonResponse(data=self._failure_msg(str(e)))

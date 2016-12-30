@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from django.db import models
-from layui.models import DictField, ListField
+from layui.models import ListField
 
 
 # Create your models here.
