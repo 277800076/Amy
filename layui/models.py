@@ -25,26 +25,3 @@ class ListField(models.TextField):
             return value
 
         return unicode(value)  # use str(value) in Python 3
-
-
-class DictField(models.TextField):
-    __metaclass__ = models.SubfieldBase
-    description = "Stores a python Dict"
-
-    def __init__(self, *args, **kwargs):
-        super(DictField, self).__init__(*args, **kwargs)
-
-    def to_python(self, value):
-        if not value:
-            value = {}
-
-        if isinstance(value, dict):
-            return value
-
-        return ast.literal_eval(value)
-
-    def get_prep_value(self, value):
-        if value is None:
-            return value
-
-        return unicode(value)  # use str(value) in Python 3

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from django.db import models
-from layui.models import ListField, DictField
+from layui.models import ListField
 from addict import Dict
 from docker.utils.types import LogConfig
 from hashers.docker.client import Docker
@@ -70,7 +70,7 @@ class DockerHost(models.Model):
 class DockerTemplateOption(models.Model):
     name = models.CharField(max_length=32,unique=True, verbose_name=u'容器名')
     binds = ListField(verbose_name=u'目录映射')
-    port_bindings = DictField(verbose_name=u'端口映射')
+    port_bindings = ListField(verbose_name=u'端口映射')
     publish_all_ports = models.BooleanField(default=False, verbose_name=u'端口随机')
     privileged = models.BooleanField(default=True, verbose_name=u'超级权限')
     network_mode = models.BooleanField(default=False, verbose_name=u'host模式')
@@ -80,7 +80,7 @@ class DockerTemplateOption(models.Model):
     images = models.ForeignKey(DockerImages, verbose_name=u'镜像')
 
     def __unicode__(self):
-        return '%s-option' % self.name
+        return self.name
 
     def config(self):
         return {

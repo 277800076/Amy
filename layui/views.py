@@ -97,8 +97,7 @@ class RestViewMixin(LayUiBaseViews):
                 else:
                     del _post[_field.name]
         list_field = [field for field in self.models._meta.local_fields if type(field) == ListField]
-        dict_field = [field for field in self.models._meta.local_fields if type(field) == DictField]
-        return _post, {_field.name: _post.pop(_field.name)for _field in list_field if _field.name in _post}, dict_field
+        return _post, {_field.name: _post.pop(_field.name)for _field in list_field if _field.name in _post}
 
     def get(self, request, data_id=None, *args, **kwargs):
         if data_id is None:
@@ -116,7 +115,7 @@ class RestViewMixin(LayUiBaseViews):
                 return JsonResponse(data=self._failure_msg(str(e)), safe=False)
 
     def post(self, request, data_id=None, *args, **kwargs):
-        _data, _list_field, _dict_field = self.save(request)
+        _data, _list_field = self.save(request)
         try:
             post = {v: self.format_json(_data[v]) for v in _data}
             data = self.models(**post)
@@ -124,11 +123,6 @@ class RestViewMixin(LayUiBaseViews):
                 for _field in _list_field:
                     field = getattr(data, _field)
                     field.append(_list_field[_field])
-            if _dict_field:
-                for _field in _dict_field:
-                    field = getattr(data, _field)
-                    field.update({value.split('=')[0]: value.split('=')[1] for value in _dict_field[_field].split(',')})
-
             data.save()
             return JsonResponse(data=self._success_msg(None), safe=False)
         except Exception, e:
