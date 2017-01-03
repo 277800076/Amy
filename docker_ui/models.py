@@ -67,16 +67,12 @@ class DockerHost(models.Model):
         db_table = 'docker_host_config'
 
 
-class DockerTemplateOption(models.Model):
-    name = models.CharField(max_length=32,unique=True, verbose_name=u'容器名')
-    binds = ListField(verbose_name=u'目录映射')
-    port_bindings = ListField(verbose_name=u'端口映射')
+class DockerTemplate(models.Model):
+    name = models.CharField(max_length=32, unique=True, verbose_name=u'容器名')
     publish_all_ports = models.BooleanField(default=False, verbose_name=u'端口随机')
     privileged = models.BooleanField(default=True, verbose_name=u'超级权限')
     network_mode = models.BooleanField(default=False, verbose_name=u'host模式')
-    extra_hosts = ListField(verbose_name=u'主机映射')
-    environment = ListField(verbose_name=u'环境变量')
-    command = models.CharField(max_length=64, verbose_name=u'命令')
+    command = models.CharField(max_length=128, verbose_name=u'命令')
     images = models.ForeignKey(DockerImages, verbose_name=u'镜像')
 
     def __unicode__(self):
@@ -84,13 +80,9 @@ class DockerTemplateOption(models.Model):
 
     def config(self):
         return {
-            'binds': self.binds if self.binds else None,
-            'port_bindings': self.port_bindings if self.port_bindings else None,
             'publish_all_ports': self.publish_all_ports,
             'privileged': self.privileged,
             'network_mode': 'host' if self.network_mode else 'default',
-            'extra_hosts': self.extra_hosts if self.extra_hosts else None,
-            'environment': self.environment if self.environment else None,
             'command': self.command if self.command else None
         }
 
@@ -101,8 +93,20 @@ class DockerTemplateOption(models.Model):
         return self.images.images
 
     class Meta:
-        db_table = 'docker_container_option'
+        db_table = 'docker_template'
 
+
+class DockerTemplateOption(models.Model):
+    template = models.ForeignKey(DockerTemplate, verbose_name=u'模板名')
+    option = models.CharField(max_length=32, verbose_name=u'配置名')
+    key = models.CharField(max_length=32, verbose_name=u'参数')
+    value = models.CharField(max_length=32, verbose_name=u'值')
+
+    def __unicode__(self):
+        return '%s:%s=%s' % (self.option, self.key, self.value)
+
+    class Meta:
+        db_table = 'docker_template_option'
 
 DockerContainerModels = Dict({
     '_meta': {

@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from models import Registry, LogServer, DockerImages, DockerHost, DockerTemplateOption, DockerContainerModels
+from models import DockerTemplate
 from layui.views import RestApi
-from django.forms import model_to_dict
+from actions import TemplateOptionAction, TemplateOptionShow
 from django.http import JsonResponse
+from django.shortcuts import render_to_response
 from django.conf.urls import url, patterns
 from forms import RegistryForm, LogServerForm, ImageFrom, CreateDockerContainerForm
-from forms import DockerHostAddForm, DockerTemplateOptionForm
+from forms import DockerHostAddForm, DockerTemplateForm, DockerTemplateOptionForm
 from addict import Dict
-from hashers.docker.client import Docker
 from layui.actions import JSAction, BtnShow
 from actions import DockerContainerShow
 import time
@@ -35,6 +36,37 @@ class ImageApi(RestApi):
     models = DockerImages
 
 
+class DockerTemplateOptionApi(RestApi):
+    name = u'模板参数'
+    list_display = ('key', 'value')
+    form_class = DockerTemplateOptionForm
+    form_name = u'模板参数'
+    models = DockerTemplateOption
+
+    def get_queryset(self, request, *args, **kwargs):
+        template_id = args[0]
+        template = DockerTemplate.objects.get(pk=template_id)
+        return self.models.objects.filter(template=template)
+
+    def _get_btn(self, *args, **kwargs):
+        return None
+
+    @classmethod
+    def urls(cls):
+        urlpatterns = patterns(
+            '',
+            url(r'api/%s/%s/$' % (cls.models._meta.app_label, cls.models._meta.model_name), view=cls.as_view(),
+                name=cls.__name__),
+            url(r'api/%s/%s/(.+)/$' % (cls.models._meta.app_label, cls.models._meta.model_name), view=cls.as_view(),
+                name=cls.__name__),
+            url(r'%s/%s/create/(.+)/$' % (cls.models._meta.app_label, cls.models._meta.model_name), view=cls.form,
+                name=cls.__name__),
+            url(r'%s/%s/(.+)/$' % (cls.models._meta.app_label, cls.models._meta.model_name), view=cls.table,
+                name=cls.__name__)
+        )
+        return urlpatterns
+
+
 class DockerHostApi(RestApi):
     name = u'主机'
     form_class = DockerHostAddForm
@@ -43,12 +75,13 @@ class DockerHostApi(RestApi):
     action = [DockerContainerShow]
 
 
-class DockerTemplateOptionApi(RestApi):
+class DockerTemplateApi(RestApi):
     name = u'模版'
-    form_class = DockerTemplateOptionForm
+    form_class = DockerTemplateForm
     form_template = 'template_add.html'
     form_name = u'创建模版'
-    models = DockerTemplateOption
+    models = DockerTemplate
+    action = [TemplateOptionAction, TemplateOptionShow]
 
 
 class DockerContainerView(RestApi):
@@ -67,13 +100,13 @@ class DockerContainerView(RestApi):
 
     def get_queryset(self, request, host_id, **kwargs):
         docker = self._docker(host_id)
-        query = docker.containers_list()
+        query = docker.containers()
         del docker
         return query
 
     def _get_td(self, request, docker, **kwargs):
         _html = u''
-        for obj in docker.containers_list():
+        for obj in docker.containers():
             obj = Dict(obj)
             _td = ''.join([self._format_value(obj, _field)
                            for _field in self._get_list_display if hasattr(obj, _field)])
@@ -162,7 +195,7 @@ class DockerContainerView(RestApi):
             return JsonResponse(data=self._failure_msg(str(e)), safe=False)
 
     def _container_config(self, _data):
-        template = DockerTemplateOption.objects.get(pk=_data.template)
+        template = DockerTemplate.objects.get(pk=_data.template)
         config = template.config()
         registry = template.registry()
         image = template.image()

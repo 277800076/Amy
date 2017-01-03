@@ -57,6 +57,38 @@ class MenusApi(RestApi):
     def default_menus(self):
         return [
             {
+                "title": u"Docker",
+                "icon": "fa-cubes",
+                "spread": False,
+                "children": [
+                    {
+                        "title": u"主机",
+                        "icon": "fa-desktop",
+                        "href": "/docker_ui/dockerhost/"
+                    },
+                    {
+                        "title": u"模板配置",
+                        "icon": "fa-tags",
+                        "href": "/docker_ui/dockertemplate/"
+                    },
+                    {
+                        "title": u"日志配置",
+                        "icon": "fa-cogs",
+                        "href": "/docker_ui/logserver/"
+                    },
+                    {
+                        "title": u"镜像",
+                        "icon": "fa-cogs",
+                        "href": "/docker_ui/dockerimages/"
+                    },
+                    {
+                        "title": u"仓库",
+                        "icon": "fa-building",
+                        "href": "/docker_ui/registry/"
+                    }
+                ]
+            },
+            {
                 "title": u"站点设置",
                 "icon": "fa-cogs",
                 "spread": False,
@@ -66,18 +98,14 @@ class MenusApi(RestApi):
                         "icon": "fa-user-o",
                         "href": "/auth/user/"
                     },
-                    # {
-                    #     "title": u"权限设置",
-                    #     "icon": "fa-lock",
-                    #     "href": "/auth"
-                    # },
                     {
                         "title": u"菜单配置",
                         "icon": "fa-navicon",
                         "href": "/amy/menus"
                     }
                 ]
-            }
+            },
+
         ]
 
     def get(self, request, data_id=None, *args, **kwargs):

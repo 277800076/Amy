@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='menus',
             name='children',
-            field=layui.models.DictField(default={}, verbose_name='\u5b50\u83dc\u5355'),
+            field=layui.models.ListField(default={}, verbose_name='\u5b50\u83dc\u5355'),
         ),
     ]

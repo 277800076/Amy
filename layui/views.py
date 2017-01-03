@@ -1,13 +1,12 @@
 # coding=utf-8
 from django.http import JsonResponse, QueryDict
 from django.conf.urls import include, url, patterns
-from addict import Dict
 from django.views.generic import FormView, View
 from django.shortcuts import render_to_response
 import datetime
 from actions import BtnShow, JSAction
 from django.db.models import ForeignKey
-from models import ListField, DictField
+from models import ListField
 
 
 class LayUiBaseViews(object):
@@ -96,6 +95,7 @@ class RestViewMixin(LayUiBaseViews):
 
     def save(self, request):
         _post = request.POST.dict()
+
         for _field in self.foreign_field:
             if _field.name in _post:
                 _f = _post[_field.name]
@@ -103,7 +103,7 @@ class RestViewMixin(LayUiBaseViews):
                     _post[_field.name] = self.get_foreign(_field, _f)
                 else:
                     del _post[_field.name]
-        post = {v: self.format_json(_post[v]) for v in _post}
+        post = {v: self.format_json(_post[v]) for v in _post if _post[v]}
         data = self.models(**post)
         if self.list_field:
             for _field in self.list_field:
@@ -241,8 +241,7 @@ class LayUiTableMixin(LayUiBaseViews):
     def get_context_data(self, request, *args, **kwargs):
         if 'view' not in kwargs:
             kwargs['view'] = self
-        kwargs['object_list'] = self.get_queryset(request)
-        kwargs['table_td'] = self._get_td(request)
+        kwargs['table_td'] = self._get_td(request, *args, **kwargs)
         kwargs['table_th'] = self._table_th()
         kwargs['order'] = self._get_order()
         kwargs['btns'] = self._get_btn(*args, **kwargs)

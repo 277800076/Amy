@@ -1,19 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from django.forms import Form, ModelForm
+from django.forms import Form
 from layui.widgets import RequiredStringField, StringField, ChoiceField, NumberField
-from django.forms import BooleanField, ModelChoiceField
+from django.forms import ModelChoiceField
 from models import LogServer, DockerImages, Registry, DockerTemplateOption
-
 
 option = (
     ('environment', '-e'),
-    ('publish_all_ports', '-P'),
     ('port_bindings', '-p'),
     ('binds', '-v'),
-    ('command', 'command'),
-    ('network_mode', '-net'),
-    ('privileged', '--privileged'),
     ('extra_hosts', '--add-host')
 )
 
@@ -60,11 +55,12 @@ class DockerHostAddForm(Form):
     tag = RequiredStringField(label=u'类型')
 
 
-class DockerTemplateOptionForm(Form):
+class DockerTemplateForm(Form):
     images = ModelChoiceField(queryset=DockerImages.objects.all(), label=u'镜像')
 
-    def __unicode__(self):
-        return '%s-option' % self.template
 
-    class Meta:
-        db_table = 'docker_container_option'
+class DockerTemplateOptionForm(Form):
+    # template = ModelChoiceField(queryset=DockerTemplate.objects.all())
+    option = ChoiceField(choices=option, label=u'配置名')
+    key = StringField(label=u'参数')
+    value = StringField(label=u'值')

@@ -16,6 +16,6 @@ class Menus(models.Model):
 
     class Meta:
         db_table = 'cfg_menus'
-        verbose_name = u''
+        verbose_name = u'菜单'
         verbose_name_plural = verbose_name
 
