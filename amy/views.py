@@ -78,7 +78,7 @@ class MenusApi(RestApi):
                     },
                     {
                         "title": u"镜像",
-                        "icon": "fa-cogs",
+                        "icon": "fa-database",
                         "href": "/docker_ui/dockerimages/"
                     },
                     {

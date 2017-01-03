@@ -38,7 +38,7 @@ class ImageApi(RestApi):
 
 class DockerTemplateOptionApi(RestApi):
     name = u'模板参数'
-    list_display = ('key', 'value')
+    list_display = ('option', 'key', 'value')
     form_class = DockerTemplateOptionForm
     form_name = u'模板参数'
     models = DockerTemplateOption
