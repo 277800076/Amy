@@ -14,4 +14,7 @@
  6. ALiYun SDK
 
 
-- 有没有发现没有6
+- 使用
+
+    `python manage.py syncdb`
+    `python manage.py runserver`
